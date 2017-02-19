@@ -1142,10 +1142,13 @@ MakeMove (MOVE m)
 {
   int r;
   int i;
-  int xside; 
-  int movecnt;
-  xside = (WHITE + BLACK) - side;
+
   count_MakeMove++;
+	/* added variables for checkless rule */
+  int movecnt;
+  int xside; 
+  xside = (WHITE + BLACK) - side;
+  MOVE tmpMoveBuf[200];		/* List of movements for other side */
 
   hist[hdp].m = m;
   hist[hdp].cap = piece[m.dest];	/* store in history the piece of the dest square */
@@ -1286,13 +1289,16 @@ MakeMove (MOVE m)
   /* Update the castle rights */
   castle &= castle_mask[m.from] & castle_mask[m.dest];
 
-  /* Checking if after making the move we're in check */
-  MOVE tmpMoveBuf[200];		/* List of movements */
+  
+ 
 
+  
 
+  /* How many moves are there? */
   movecnt = GenMoves (xside, tmpMoveBuf);
-
+  /* Checking if after making the move we're in check */
   r = !IsInCheck (side);
+  /*If there ARE moves AND the other king is in check, the move is illegal, and r is set to false*/
   if(movecnt && IsInCheck(xside)) r = 0;
   /* After making move, give turn to opponent */
   side = (WHITE + BLACK) - side;
